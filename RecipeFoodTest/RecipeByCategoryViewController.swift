@@ -1,0 +1,166 @@
+//
+//  RecipeByCategoryViewController.swift
+//  RecipeFoodTest
+//
+//  Created by TienPV on 12/6/18.
+//  Copyright © 2018 TienPV. All rights reserved.
+//
+
+import UIKit
+import SVProgressHUD
+
+class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+
+    @IBOutlet weak var lblFoundRecords: UILabel!
+    @IBOutlet weak var tableView: UITableView!
+    
+    var recipeLst : Array<RecipeItem>? = Array<RecipeItem>()
+    var resourceImageLst : Dictionary<Int, UIImage> = Dictionary<Int, UIImage>()
+    var currentPage : Int = 0
+    var totalPage : Int = 1
+    var totalRecords : Int = 0
+    var isPageLoaded : Bool = false
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        isPageLoaded = false
+        
+        SVProgressHUD.show()
+        searchData(pageIndex: 1)
+        
+        self.title = Category.CurrentCategoryName
+    }
+    
+    func searchData(pageIndex : Int!)
+    {
+        let URLStr = "http://vnbsoft.ddns.net:1234/api/Recipe?categoryId=" + String(format: "%d", Category.CurrentCategoryId) + "&pageIndex=" + String(format: "%d", pageIndex)
+        let url = URL(string: URLStr)
+        HttpHelperRequest.FetchHttpGet(with: url, completionHandler: { (data, response, error) in
+            if let jsonData = data
+            {
+                // Will return an object or nil if JSON decoding fails
+                do
+                {
+                    let message = try JSONSerialization.jsonObject(with: jsonData, options:.mutableContainers) as AnyObject
+                    self.totalRecords = (message["Key"] as AnyObject? as? Int) ?? 0
+                    self.totalPage = self.totalRecords / 15;
+                    if self.totalRecords % 15 > 0
+                    {
+                        self.totalPage = self.totalPage + 1
+                    }
+                    
+                    if let jsonResult = message["Value"] as? NSMutableArray
+                    {
+                        var id : Int = 0
+                        for anyObj in jsonResult as Array<AnyObject>
+                        {
+                            
+                            var id : Int = (anyObj["Id"] as AnyObject? as? Int) ?? 0
+                            var previewImage:String = (anyObj["PreviewImage"] as AnyObject? as? String) ?? ""
+                            var name:String = (anyObj["RecipeName"] as AnyObject? as? String) ?? ""
+                            var difficult:String = (anyObj["DifficultLevel"] as AnyObject? as? String) ?? ""
+                            var nbReverving : Int = (anyObj["NbReserving"] as AnyObject? as? Int) ?? 0
+                            
+                            var recipeItem:RecipeItem = RecipeItem(id: id, previewImg: previewImage,name: name, difficult : difficult, nbReserving: nbReverving)
+                            
+                            self.recipeLst?.append(recipeItem);
+                            
+                            
+                        }
+                        
+                        //return jsonResult //Will return the json array output
+                    }
+                }
+                catch let error as NSError
+                {
+                    print("An error occurred: \(error)")
+                }
+            }
+            
+            SVProgressHUD.dismiss()
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                self.isPageLoaded = false;
+                self.lblFoundRecords.text = String(format: "Có %d công thức", self.totalRecords)
+                self.lblFoundRecords.isHidden = false
+            }
+            
+        })
+    }
+    
+    //delegate methods
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return (recipeLst?.count)!
+    }
+    
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        RecipeItem.CurrentRecipeId = recipeLst?[indexPath.item].Id ?? -1
+        // goToRecipeList
+        performSegue(withIdentifier: "categoryGoToRecipeDetail", sender: self)
+    }
+
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Row") as! SearchTableViewCell
+        
+        cell.lblSearchTitle.text = recipeLst?[indexPath.item].RecipeName
+        cell.lblSearchNbReserving.text = String(format: "%d", recipeLst?[indexPath.item].NbReserving ?? 0)
+        cell.lblSearchLevel.text = recipeLst?[indexPath.item].DifficultLevel
+        let url = URL(string: (recipeLst?[indexPath.item].PreviewImg)!)
+        //let data = try? Data(contentsOf: url!)
+        //cell.previewImage.image = UIImage(data: data!)
+        if self.resourceImageLst[(recipeLst?[indexPath.item].Id)!] == nil
+        {
+            let task = URLSession.shared.dataTask(with: url!) { data, response, error in
+                guard let data = data, error == nil else { return }
+                
+                DispatchQueue.main.async() {    // execute on main thread
+                    cell.previewImage.image = UIImage(data: data)
+                    self.resourceImageLst[(self.recipeLst?[indexPath.item].Id)!] = UIImage(data: data)
+                }
+            }
+            task.resume()
+        }
+        else
+        {
+            cell.previewImage.image = self.resourceImageLst[(recipeLst?[indexPath.item].Id)!]
+        }
+        
+        cell.previewImage.layer.cornerRadius = 8.0
+        cell.previewImage.clipsToBounds = true
+        cell.layer.borderColor = UIColor.groupTableViewBackground.cgColor
+        cell.layer.borderWidth = 2
+        
+        return cell
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let isReachingEnd = scrollView.contentOffset.y >= 0
+            && scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)
+        
+        if isReachingEnd && totalPage > currentPage && !isPageLoaded
+        {
+            isPageLoaded = true;
+            currentPage = currentPage + 1
+            searchData(pageIndex: currentPage)
+            NSLog("Scroll end!!!")
+        }
+    }
+
+}

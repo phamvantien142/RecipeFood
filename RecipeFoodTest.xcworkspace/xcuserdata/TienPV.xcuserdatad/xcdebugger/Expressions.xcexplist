@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "closure #1 in closure #1 in SearchController.searchBarSearchButtonClicked(_:):SearchController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.recipeLst">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in ViewController.viewDidLoad():ViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in ViewController.viewWillAppear(_:):ViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "CategoryController.collectionView(_:numberOfItemsInSection:):CategoryController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Category.Instance?.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RecipeStepCell.collectionView(_:numberOfItemsInSection:):RecipeStepCell.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "RecipeDetailViewController.dict[collectionView]!">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "SearchController.searchBarSearchButtonClicked(_:):SearchController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "searchBar.text == &quot;&quot;">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RecipeDetailViewController.tableView(_:cellForRowAt:):RecipeDetailViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "RecipeDetailViewController.dict[cell.collectionView]">
+            </PersistentString>
+            <PersistentString
+               value = "indexPath.item - 3 - (recipeArray?.count)!">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RecipeStepCell.collectionView(_:cellForItemAt:):RecipeStepCell.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "RecipeDetailViewController.dict[collectionView]!">
+            </PersistentString>
+            <PersistentString
+               value = "indexPath.item">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in SearchController.searchBarSearchButtonClicked(_:):SearchController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "url as URL">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in RecipeDetailViewController.viewDidLoad():RecipeDetailViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "content">
+            </PersistentString>
+            <PersistentString
+               value = "imageLink">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "SearchController.tableView(_:cellForRowAt:):SearchController.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
