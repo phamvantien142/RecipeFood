@@ -11,7 +11,11 @@ import SVProgressHUD
 
 class ViewController: UIViewController {
 
-    
+    func getJsonDataFromName(name: String) -> [Any] {
+        let asset = NSDataAsset(name: name, bundle: Bundle.main)
+        return try! JSONSerialization.jsonObject(with: asset!.data, options: []) as! [Any]
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -19,41 +23,13 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
         
         SVProgressHUD.show()
-        
-        let url = URL(string: "http://vnbsoft.ddns.net:1234/api/Recipe?category")
-        HttpHelperRequest.FetchHttpGet(with: url, completionHandler: { (data, response, error) in
-            if let jsonData = data
-            {
-                // Will return an object or nil if JSON decoding fails
-                do
-                {
-                    let message = try JSONSerialization.jsonObject(with: jsonData, options:.mutableContainers)
-                    if let jsonResult = message as? NSMutableArray
-                    {
-                        for anyObj in jsonResult as Array<AnyObject>
-                        {
-                            
-                            var id : Int = (anyObj["Id"] as AnyObject? as? Int) ?? 0
-                            var bgImg:String = (anyObj["BgImageUrl"] as AnyObject? as? String) ?? ""
-                            var categoryName:String = (anyObj["CategoryName"] as AnyObject? as? String) ?? ""
-                            var totalOfRecipes : Int = (anyObj["TotalOfRecipes"] as AnyObject? as? Int) ?? 0
-                            
-                            var category:Category = Category(id: id, categoryName: categoryName, bgImg: bgImg, totalOfRecipes: totalOfRecipes);
-                            
-                            Category.Instance?.append(category);
-                        }
-                        
-                        //return jsonResult //Will return the json array output
-                    }
-                }
-                catch let error as NSError
-                {
-                    print("An error occurred: \(error)")
-                }
-            }
-            self.performSegue(withIdentifier: "goToTabBar", sender: self)
-            SVProgressHUD.dismiss()
-        })
+        //Time consuming task here
+        let asset = NSDataAsset(name: "categories", bundle: Bundle.main)
+        let json = try? JSONSerialization.jsonObject(with: asset!.data, options: [])
+        RecipeManager.LoadAllCategories(jsonWithArrayRoot: getJsonDataFromName(name: "categories"))
+        RecipeManager.LoadAllRecipes(jsonWithArrayRoot: getJsonDataFromName(name: "recipes"))
+        self.performSegue(withIdentifier: "goToTabBar", sender: self)
+        SVProgressHUD.dismiss()
     }
 
 }

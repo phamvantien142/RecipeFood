@@ -35,40 +35,40 @@ class CategoryController: UIViewController, UICollectionViewDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        Category.CurrentCategoryId = Category.Instance?[indexPath.item].Id ?? -1
-        Category.CurrentCategoryName = Category.Instance?[indexPath.item].CategoryName ?? ""
+        RecipeManager.CurrentCategoryId = RecipeManager.CategoriesInstance?[indexPath.item].Id ?? -1
+        RecipeManager.CurrentCategoryName = RecipeManager.CategoriesInstance?[indexPath.item].CategoryName ?? ""
         // goToRecipeList
         performSegue(withIdentifier: "goToRecipeList", sender: self)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section : Int) -> Int {
-        return (Category.Instance?.count)!;
+        return (RecipeManager.CategoriesInstance?.count)!;
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! CategoryCollectionViewCell
         
-        cell.lblTitle.text = Category.Instance?[indexPath.item].CategoryName
-        cell.lblDescription.text = String(format: "(%d món)", Category.Instance?[indexPath.item].TotalOfRecipes ?? 0)
-        let url = URL(string: (Category.Instance?[indexPath.item].BgImg)!)
+        cell.lblTitle.text = RecipeManager.CategoriesInstance?[indexPath.item].CategoryName
+        cell.lblDescription.text = String(format: "(%d món)", RecipeManager.CategoriesInstance?[indexPath.item].TotalOfRecipes ?? 0)
+        let url = URL(string: (RecipeManager.CategoriesInstance?[indexPath.item].BgImg)!)
         //let data = try? Data(contentsOf: url!)
         //cell.previewImage.image = UIImage(data: data!)
-        if self.resourceImageLst[(Category.Instance?[indexPath.item].Id)!] == nil
+        if self.resourceImageLst[(RecipeManager.CategoriesInstance?[indexPath.item].Id)!] == nil
         {
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }
                 
                 DispatchQueue.main.async() {    // execute on main thread
                     cell.previewImage.image = UIImage(data: data)
-                    self.resourceImageLst[(Category.Instance?[indexPath.item].Id)!] = UIImage(data: data)
+                    self.resourceImageLst[(RecipeManager.CategoriesInstance?[indexPath.item].Id)!] = UIImage(data: data)
                 }
             }
             task.resume()
         }
         else
         {
-            cell.previewImage.image = self.resourceImageLst[(Category.Instance?[indexPath.item].Id)!]
+            cell.previewImage.image = self.resourceImageLst[(RecipeManager.CategoriesInstance?[indexPath.item].Id)!]
         }
         
         cell.previewImage.layer.cornerRadius = 8.0
