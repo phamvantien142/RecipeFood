@@ -18,7 +18,7 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
     @IBOutlet weak var tableView: UITableView!
 
     
-    var recipeLst : Array<RecipeItem>? = Array<RecipeItem>()
+    var recipeLst : Array<RecipePreview>? = Array<RecipePreview>()
     var resourceImageLst : Dictionary<Int, UIImage> = Dictionary<Int, UIImage>()
     var currentPage : Int = 0
     var totalPage : Int = 1
@@ -99,10 +99,11 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
                             var difficult:String = (anyObj["DifficultLevel"] as AnyObject? as? String) ?? ""
                             var nbReverving : Int = (anyObj["NbReserving"] as AnyObject? as? Int) ?? 0
                             
-                            var recipeItem:RecipeItem = RecipeItem(id: id, previewImg: previewImage,name: name, difficult : difficult, nbReserving: nbReverving)
+                            /*
+                            var recipeItem:RecipePreview = RecipePreview(id: id, previewImg: previewImage,name: name, difficult : difficult, nbReserving: nbReverving)
                             
                             self.recipeLst?.append(recipeItem);
-                            
+                            */
                             
                         }
                         

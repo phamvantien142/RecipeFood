@@ -48,13 +48,13 @@ class CategoryController: UIViewController, UICollectionViewDelegate, UICollecti
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! CategoryCollectionViewCell
-        
-        cell.lblTitle.text = RecipeManager.CategoriesInstance?[indexPath.item].CategoryName
-        cell.lblDescription.text = String(format: "(%d món)", RecipeManager.CategoriesInstance?[indexPath.item].TotalOfRecipes ?? 0)
-        let url = URL(string: (RecipeManager.CategoriesInstance?[indexPath.item].BgImg)!)
+        let categoryItem = RecipeManager.CategoriesInstance?[indexPath.item]
+        cell.lblTitle.text = categoryItem?.CategoryName
+        cell.lblDescription.text = String(format: "(%d món)", RecipeManager.CategoryCounter![categoryItem!.Id] ?? 0)
+        let url = URL(string: (categoryItem!.BgImg)!)
         //let data = try? Data(contentsOf: url!)
         //cell.previewImage.image = UIImage(data: data!)
-        if self.resourceImageLst[(RecipeManager.CategoriesInstance?[indexPath.item].Id)!] == nil
+        if self.resourceImageLst[(categoryItem!.Id)!] == nil
         {
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }

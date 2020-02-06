@@ -14,8 +14,8 @@ class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UIT
     @IBOutlet weak var lblFoundRecords: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
-    var recipeLst : Array<RecipeItem>? = Array<RecipeItem>()
-    var resourceImageLst : Dictionary<Int, UIImage> = Dictionary<Int, UIImage>()
+    var recipeLst : Array<RecipePreview>? = Array<RecipePreview>()
+    var resourceImageLst : Dictionary<String, UIImage> = Dictionary<String, UIImage>()
     var currentPage : Int = 0
     var totalPage : Int = 1
     var totalRecords : Int = 0
@@ -32,65 +32,38 @@ class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UIT
         SVProgressHUD.show()
         searchData(pageIndex: 1)
         
-        self.title = Category.CurrentCategoryName
+        self.title = RecipeManager.CurrentCategoryName
     }
     
     func searchData(pageIndex : Int!)
     {
-        let URLStr = "http://vnbsoft.ddns.net:1234/api/Recipe?categoryId=" + String(format: "%d", Category.CurrentCategoryId) + "&pageIndex=" + String(format: "%d", pageIndex)
-        let url = URL(string: URLStr)
-        HttpHelperRequest.FetchHttpGet(with: url, completionHandler: { (data, response, error) in
-            if let jsonData = data
-            {
-                // Will return an object or nil if JSON decoding fails
-                do
-                {
-                    let message = try JSONSerialization.jsonObject(with: jsonData, options:.mutableContainers) as AnyObject
-                    self.totalRecords = (message["Key"] as AnyObject? as? Int) ?? 0
-                    self.totalPage = self.totalRecords / 15;
-                    if self.totalRecords % 15 > 0
-                    {
-                        self.totalPage = self.totalPage + 1
-                    }
-                    
-                    if let jsonResult = message["Value"] as? NSMutableArray
-                    {
-                        var id : Int = 0
-                        for anyObj in jsonResult as Array<AnyObject>
-                        {
-                            
-                            var id : Int = (anyObj["Id"] as AnyObject? as? Int) ?? 0
-                            var previewImage:String = (anyObj["PreviewImage"] as AnyObject? as? String) ?? ""
-                            var name:String = (anyObj["RecipeName"] as AnyObject? as? String) ?? ""
-                            var difficult:String = (anyObj["DifficultLevel"] as AnyObject? as? String) ?? ""
-                            var nbReverving : Int = (anyObj["NbReserving"] as AnyObject? as? Int) ?? 0
-                            
-                            var recipeItem:RecipeItem = RecipeItem(id: id, previewImg: previewImage,name: name, difficult : difficult, nbReserving: nbReverving)
-                            
-                            self.recipeLst?.append(recipeItem);
-                            
-                            
-                        }
-                        
-                        //return jsonResult //Will return the json array output
-                    }
-                }
-                catch let error as NSError
-                {
-                    print("An error occurred: \(error)")
+        DispatchQueue.global(qos: .background).async {
+            var recordItems = Array<RecipePreview>()
+            for previewItem in RecipeManager.RecipesPreviewInstance! {
+                if (previewItem.CategoryId == RecipeManager.CurrentCategoryId) {
+                    recordItems.append(previewItem)
                 }
             }
-            
+            self.totalRecords = recordItems.count ?? 0
+            self.totalPage = self.totalRecords / 15
+            if self.totalRecords % 15 > 0
+            {
+                self.totalPage = self.totalPage + 1
+            }
+            for id in ((pageIndex - 1) * 15)..<(pageIndex * 15 - 1) {
+                if (id >= self.totalRecords) {
+                    break
+                }
+                self.recipeLst?.append(recordItems[id])
+            }
             SVProgressHUD.dismiss()
-            
             DispatchQueue.main.async {
                 self.tableView.reloadData()
                 self.isPageLoaded = false;
                 self.lblFoundRecords.text = String(format: "Có %d công thức", self.totalRecords)
                 self.lblFoundRecords.isHidden = false
             }
-            
-        })
+        }
     }
     
     //delegate methods
@@ -109,7 +82,7 @@ class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        RecipeItem.CurrentRecipeId = recipeLst?[indexPath.item].Id ?? -1
+        RecipeManager.CurrentRecipe = recipeLst?[indexPath.item]
         // goToRecipeList
         performSegue(withIdentifier: "categoryGoToRecipeDetail", sender: self)
     }
@@ -122,24 +95,28 @@ class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UIT
         cell.lblSearchTitle.text = recipeLst?[indexPath.item].RecipeName
         cell.lblSearchNbReserving.text = String(format: "%d", recipeLst?[indexPath.item].NbReserving ?? 0)
         cell.lblSearchLevel.text = recipeLst?[indexPath.item].DifficultLevel
-        let url = URL(string: (recipeLst?[indexPath.item].PreviewImg)!)
+        var urlStr = recipeLst?[indexPath.item].PreviewImg!
+        if (!(urlStr?.starts(with: "http"))!) {
+            urlStr = "https://media.cooky.vn/" + urlStr!
+        }
+        let url = URL(string: (urlStr!))
         //let data = try? Data(contentsOf: url!)
         //cell.previewImage.image = UIImage(data: data!)
-        if self.resourceImageLst[(recipeLst?[indexPath.item].Id)!] == nil
+        if (self.resourceImageLst[(recipeLst?[indexPath.item].RecipeName)!] == nil)
         {
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }
                 
                 DispatchQueue.main.async() {    // execute on main thread
                     cell.previewImage.image = UIImage(data: data)
-                    self.resourceImageLst[(self.recipeLst?[indexPath.item].Id)!] = UIImage(data: data)
+                    self.resourceImageLst[(self.recipeLst?[indexPath.item].RecipeName)!] = UIImage(data: data)
                 }
             }
             task.resume()
         }
         else
         {
-            cell.previewImage.image = self.resourceImageLst[(recipeLst?[indexPath.item].Id)!]
+            cell.previewImage.image = self.resourceImageLst[(recipeLst?[indexPath.item].RecipeName)!]
         }
         
         cell.previewImage.layer.cornerRadius = 8.0
