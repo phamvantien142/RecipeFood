@@ -9,5 +9,4 @@ target 'RecipeFoodTest' do
   pod 'SVProgressHUD'
   pod 'SwiftyJSON'
   pod 'Alamofire'
-
 end
