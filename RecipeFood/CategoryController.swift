@@ -55,13 +55,14 @@ class CategoryController: UIViewController, UICollectionViewDelegate, UICollecti
         //cell.previewImage.image = UIImage(data: data!)
         if self.resourceImageLst[(categoryItem!.Id)!] == nil
         {
-            cell.previewImage.image = LoadingGif
+            cell.previewImage.setLoadingAnimation()
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }
                 
                 DispatchQueue.main.async() {    // execute on main thread
-                    cell.previewImage.image = UIImage(data: data)
-                    self.resourceImageLst[(RecipeManager.CategoriesInstance?[indexPath.item].Id)!] = UIImage(data: data)
+                    let image = UIImage(data: data)
+                    cell.previewImage.setImage(image: image!)
+                    self.resourceImageLst[(RecipeManager.CategoriesInstance?[indexPath.item].Id)!] = image
                 }
             }
             task.resume()

@@ -103,12 +103,13 @@ class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UIT
         //cell.previewImage.image = UIImage(data: data!)
         if (self.resourceImageLst[(recipeLst?[indexPath.item].RecipeName)!] == nil)
         {
-            cell.previewImage.image = LoadingGif
+            cell.previewImage.setLoadingAnimation()
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }
                 
                 DispatchQueue.main.async() {    // execute on main thread
-                    cell.previewImage.image = UIImage(data: data)
+                    let image = UIImage(data: data)
+                    cell.previewImage.setImage(image: image!)
                     self.resourceImageLst[(self.recipeLst?[indexPath.item].RecipeName)!] = UIImage(data: data)
                 }
             }

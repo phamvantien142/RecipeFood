@@ -135,11 +135,12 @@ class RecipeDetailViewController: UIViewController, UITableViewDelegate, UITable
             cell.lblDescription.text = summary
             let url = URL(string: (previewImage!))
             cell.previewImg.image = LoadingGif
+            cell.previewImg.setLoadingAnimation()
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }
                 
                 DispatchQueue.main.async() {
-                    cell.previewImg.image = UIImage(data: data)
+                    cell.previewImg.setImage(image: UIImage(data: data)!)
                 }
             }
             task.resume()
@@ -188,13 +189,14 @@ class RecipeDetailViewController: UIViewController, UITableViewDelegate, UITable
                         urlStr = "https://media.cooky.vn/" + urlStr
                     }
                     let url = URL(string: urlStr)
-                    cell.BgImageView.image = LoadingGif
+                    cell.BgImageView.setLoadingAnimation()
                     let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                         guard let data = data, error == nil else { return }
                         
                         DispatchQueue.main.async() {    // execute on main thread
-                            cell.BgImageView.image = UIImage(data: data)
-                            self.resourceImageLst[(indexPath.item - 3 - (self.recipeArray?.count)!)] = UIImage(data: data)
+                            let image = UIImage(data: data)
+                            cell.BgImageView.setImage(image: image!)
+                            self.resourceImageLst[(indexPath.item - 3 - (self.recipeArray?.count)!)] = image
                         }
                     }
                     task.resume()

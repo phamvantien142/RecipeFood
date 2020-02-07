@@ -35,6 +35,8 @@ extension UIViewController {
     }
 }
 
+let LoadingGif = UIImage.gif(data: NSDataAsset(name: "loading")!.data)
+
 extension UIImageView {
 
     public func loadGif(name: String) {
@@ -56,10 +58,20 @@ extension UIImageView {
         }
     }
 
+    public func setLoadingAnimation() {
+        self.contentMode = ContentMode.scaleAspectFit
+        self.image = LoadingGif
+        self.reloadInputViews()
+    }
+    
+    public func setImage(image: UIImage) {
+        self.image = image
+        self.contentMode = ContentMode.scaleToFill
+        self.reloadInputViews()
+    }
 }
 
 extension UIImage {
-
     public class func gif(data: Data) -> UIImage? {
         // Create source from data
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
@@ -249,5 +261,3 @@ extension UIImage {
         return animation
     }
 }
-
-let LoadingGif = UIImage.gif(data: NSDataAsset(name: "loading")!.data)
