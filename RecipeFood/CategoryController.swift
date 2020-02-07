@@ -55,6 +55,7 @@ class CategoryController: UIViewController, UICollectionViewDelegate, UICollecti
         //cell.previewImage.image = UIImage(data: data!)
         if self.resourceImageLst[(categoryItem!.Id)!] == nil
         {
+            cell.previewImage.image = LoadingGif
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }
                 

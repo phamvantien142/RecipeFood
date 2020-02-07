@@ -103,6 +103,7 @@ class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UIT
         //cell.previewImage.image = UIImage(data: data!)
         if (self.resourceImageLst[(recipeLst?[indexPath.item].RecipeName)!] == nil)
         {
+            cell.previewImage.image = LoadingGif
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }
                 

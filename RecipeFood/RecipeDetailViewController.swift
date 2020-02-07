@@ -134,6 +134,7 @@ class RecipeDetailViewController: UIViewController, UITableViewDelegate, UITable
             let cell = tableView.dequeueReusableCell(withIdentifier: "PreviewImg") as! PreviewImgCell
             cell.lblDescription.text = summary
             let url = URL(string: (previewImage!))
+            cell.previewImg.image = LoadingGif
             let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                 guard let data = data, error == nil else { return }
                 
@@ -187,6 +188,7 @@ class RecipeDetailViewController: UIViewController, UITableViewDelegate, UITable
                         urlStr = "https://media.cooky.vn/" + urlStr
                     }
                     let url = URL(string: urlStr)
+                    cell.BgImageView.image = LoadingGif
                     let task = URLSession.shared.dataTask(with: url!) { data, response, error in
                         guard let data = data, error == nil else { return }
                         
