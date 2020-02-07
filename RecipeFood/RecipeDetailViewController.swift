@@ -7,9 +7,6 @@
 //
 
 import UIKit
-import SVProgressHUD
-
-
 
 class RecipeDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -43,7 +40,7 @@ class RecipeDetailViewController: UIViewController, UITableViewDelegate, UITable
         tableView.delegate = self
         tableView.dataSource = self
         
-        SVProgressHUD.show()
+        self.showSpinner(onView: self.view)
         isLoaded = false
         
         self.titleNavigationITem.title = "";
@@ -94,7 +91,7 @@ class RecipeDetailViewController: UIViewController, UITableViewDelegate, UITable
                 self.tableView.reloadData()
                 NSLog("reloadData")
             }
-            SVProgressHUD.dismiss()
+            self.removeSpinner()
             self.isLoaded = true
         }
     }

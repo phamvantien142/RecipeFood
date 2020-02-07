@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SVProgressHUD
 
 class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -29,7 +28,7 @@ class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UIT
         
         isPageLoaded = false
         
-        SVProgressHUD.show()
+        //SVProgressHUD.show()
         searchData(pageIndex: 1)
         
         self.title = RecipeManager.CurrentCategoryName
@@ -56,7 +55,7 @@ class RecipeByCategoryViewController: UIViewController, UITableViewDelegate, UIT
                 }
                 self.recipeLst?.append(recordItems[id])
             }
-            SVProgressHUD.dismiss()
+            //SVProgressHUD.dismiss()
             DispatchQueue.main.async {
                 self.tableView.reloadData()
                 self.isPageLoaded = false;

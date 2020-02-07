@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SVProgressHUD
 
 class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate
 {
@@ -53,7 +52,7 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
             NSLog(searchBar.text!)
             searchBar.endEditing(true)
             
-            SVProgressHUD.show()
+            //SVProgressHUD.show()
             NotFoundView.isHidden = true;
             lblFoundRecords.isHidden = true;
             tableView.setContentOffset(.zero, animated:true)
@@ -116,7 +115,7 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 }
             }
             
-            SVProgressHUD.dismiss()
+            //SVProgressHUD.dismiss()
             
             DispatchQueue.main.async {
                 if self.recipeLst?.count == 0

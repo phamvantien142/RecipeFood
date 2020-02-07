@@ -7,7 +7,31 @@
 //
 
 import UIKit
-import SVProgressHUD
+
+var vSpinner : UIView?
+extension UIViewController {
+    func showSpinner(onView : UIView) {
+        let spinnerView = UIView.init(frame: onView.bounds)
+        spinnerView.backgroundColor = UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+        let ai = UIActivityIndicatorView.init(style: .whiteLarge)
+        ai.startAnimating()
+        ai.center = spinnerView.center
+        
+        DispatchQueue.main.async {
+            spinnerView.addSubview(ai)
+            onView.addSubview(spinnerView)
+        }
+        
+        vSpinner = spinnerView
+    }
+    
+    func removeSpinner() {
+        DispatchQueue.main.async {
+            vSpinner?.removeFromSuperview()
+            vSpinner = nil
+        }
+    }
+}
 
 class ViewController: UIViewController {
 
@@ -28,7 +52,7 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        SVProgressHUD.show()
+        self.showSpinner(onView: self.view)
         DispatchQueue.global(qos: .background).async {
             let categoryStr = self.getJsonDataFromName(name: "categories")
             let recipePreviewStr = self.getJsonDataFromName(name: "recipePreviews")
@@ -36,7 +60,7 @@ class ViewController: UIViewController {
             RecipeManager.LoadAllRecipePreviews(jsonWithArrayRoot: recipePreviewStr)
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "goToTabBar", sender: self)
-                SVProgressHUD.dismiss()
+                self.removeSpinner()
             }
             RecipeManager.Group.enter()
             RecipeManager.LoadAllRecipeDetails(jsonWithArrayRoot: self.getJsonDataFromName(name: "recipeDetails"))
